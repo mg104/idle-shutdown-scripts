@@ -61,19 +61,16 @@ echo "Checking if docker is running"
 while true; do
 	if docker info >/dev/null 2>&1; then
 		echo "Docker is running"
+		break
 	else	
 		echo "Waiting for docker to start"
 		sleep 1
 	fi
-		
-	if $(/usr/bin/docker exec ${CONTAINER_NAME} printenv JUPYTER_TOKEN) > /dev/null; then
-		echo "Docker container is running"
-		break
-	else
+done
+
+while ! docker container inspect -f '{{.State.Running}}' "${CONTAINER_NAME}" >/dev/null 2>&1; do
 		echo "Docker container is yet to start"
 		sleep 1
-	fi
-
 done
 
 #Printing env variables before going to sleep for 5 minutes
