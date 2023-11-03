@@ -68,9 +68,7 @@ while true; do
 	fi
 done
 
-# Sleeping for some time to allow time to start notebooks
-echo "Sleeping for ${SLEEP_SECONDS} seconds"
-sleep ${SLEEP_SECONDS}
+#Printing env variables before going to sleep for 5 minutes
 
 # Get the docker container's name from BASHRC file. Declare it in .bashrc file for purposes of being used at startup
 echo "Container Name: ${CONTAINER_NAME}"
@@ -83,6 +81,10 @@ echo "Jupyter token: ${JUPYTER_TOKEN}"
 API_SESSION="localhost:8888/api/sessions?token=${JUPYTER_TOKEN}"
 echo -e "API Session: ${API_SESSION}\n"
 echo "---------------------------------------------------------------------------"
+
+# Sleeping for some time to allow time to start notebooks
+echo "Sleeping for ${SLEEP_SECONDS} seconds"
+sleep ${SLEEP_SECONDS}
 
 # Create a while loop to check every n seconds if there is no kernel running
 while true; do
