@@ -97,7 +97,7 @@ while true; do
 	echo -e "Response:\n${RESPONSE}\n"
 	if [ "${RESPONSE}" == "[]" ]; then
 		echo -e "Jupyterlab curl API returned an empty array. Shutting down...\n"
-		$(which shutdown) now
+		usr/sbin/shutdown now
 		SHUTDOWN_STATUS=$?
 		if [ ${SHUTDOWN_STATUS} -ne 0 ]; then
 			/mnt/c/WINDOWS/system32/wsl.exe -t Ubuntu-20.04
