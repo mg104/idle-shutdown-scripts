@@ -94,7 +94,7 @@ sleep ${SLEEP_SECONDS}
 # Create a while loop to check every n seconds if there is no kernel running
 while true; do
 	RESPONSE=$(/usr/bin/docker exec ${CONTAINER_NAME} curl -s "${API_SESSION}")
-	echo -e "Response:\n${RESPONSE}\n"
+	# echo -e "Response:\n${RESPONSE}\n"
 	if [ "${RESPONSE}" == "[]" ]; then
 		echo -e "Jupyterlab curl API returned an empty array. Shutting down...\n"
 		/usr/sbin/shutdown now
@@ -102,8 +102,8 @@ while true; do
 		if [ ${SHUTDOWN_STATUS} -ne 0 ]; then
 			/mnt/c/WINDOWS/system32/wsl.exe -t Ubuntu-20.04
 		fi
-	else 
-		echo "Received Response ============> Not shutting down"
+	#else 
+		#echo "Received Response ============> Not shutting down"
 	fi 
 	echo "------------------------------------------------------------------------------"
 	sleep ${CHECK_INTERVAL}
