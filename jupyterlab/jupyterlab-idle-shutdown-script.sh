@@ -99,7 +99,7 @@ while true; do
 	RESPONSE=$(/usr/bin/docker exec ${CONTAINER_NAME} curl -s "${API_SESSION}")
 	# echo -e "Response:\n${RESPONSE}\n"
 	if [ "${RESPONSE}" != "[]" ]; then
-		if [ "${EMPTY_RESPONSE_COUNT}" == 1 ]; then
+		if [ ${EMPTY_RESPONSE_COUNT} -eq 1 ]; then
 			echo "Jupyterlab notebook restarted and therefore resetting the shutdown empty response counter"
 		fi
 		EMPTY_RESPONSE_COUNT=0
