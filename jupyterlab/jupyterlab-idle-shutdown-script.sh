@@ -2,9 +2,9 @@
 
 # Initializing command line arguments
 CONTAINER_NAME=""
-SLEEP_SECONDS="300"
+SLEEP_SECONDS="180"
 LOG_FILE=""
-CHECK_INTERVAL="300"
+CHECK_INTERVAL="180"
 
 # Function to show usage
 usage() {
@@ -92,7 +92,7 @@ echo "Sleeping for ${SLEEP_SECONDS} seconds"
 sleep ${SLEEP_SECONDS}
 
 # Setting initial empty response count, to shut down only when we receive empty response the second time
-EMPTY_RESPONSE_TIME=0
+EMPTY_RESPONSE_COUNT=0
 
 # Create a while loop to check every n seconds if there is no kernel running
 while true; do
