@@ -98,7 +98,9 @@ EMPTY_RESPONSE_TIME=0
 while true; do
 	RESPONSE=$(/usr/bin/docker exec ${CONTAINER_NAME} curl -s "${API_SESSION}")
 	# echo -e "Response:\n${RESPONSE}\n"
-	if [ "${RESPONSE}" == "[]" ]; then
+	if [ "${RESPONSE}" != "[]" ]; then
+		EMPTY_RESPONSE_TIME=0
+	elif [ "${RESPONSE}" == "[]" ]; then
 		if [ ${EMPTY_RESPONSE_COUNT} -eq 0 ]; then
 			echo "Jupyterlab curl API has returned an empty array for the first time. Waiting for it to return empty array the second time..."
 			EMPTY_RESPONSE_COUNT=1
@@ -115,4 +117,4 @@ while true; do
 	fi 
 	# echo "------------------------------------------------------------------------------"
 	sleep ${CHECK_INTERVAL}
-done
+done 
