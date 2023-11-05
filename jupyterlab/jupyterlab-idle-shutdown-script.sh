@@ -4,7 +4,7 @@
 CONTAINER_NAME=""
 SLEEP_SECONDS="300"
 LOG_FILE=""
-CHECK_INTERVAL="10"
+CHECK_INTERVAL="300"
 
 # Function to show usage
 usage() {
@@ -91,20 +91,28 @@ echo "--------------------------------------------------------------------------
 echo "Sleeping for ${SLEEP_SECONDS} seconds"
 sleep ${SLEEP_SECONDS}
 
+# Setting initial empty response count, to shut down only when we receive empty response the second time
+EMPTY_RESPONSE_TIME=0
+
 # Create a while loop to check every n seconds if there is no kernel running
 while true; do
 	RESPONSE=$(/usr/bin/docker exec ${CONTAINER_NAME} curl -s "${API_SESSION}")
 	# echo -e "Response:\n${RESPONSE}\n"
 	if [ "${RESPONSE}" == "[]" ]; then
-		echo -e "Jupyterlab curl API returned an empty array. Shutting down...\n"
-		/usr/sbin/shutdown now
-		SHUTDOWN_STATUS=$?
-		if [ ${SHUTDOWN_STATUS} -ne 0 ]; then
-			/mnt/c/WINDOWS/system32/wsl.exe -t Ubuntu-20.04
+		if [ ${EMPTY_RESPONSE_COUNT} -eq 0 ]; then
+			echo "Jupyterlab curl API has returned an empty array for the first time. Waiting for it to return empty array the second time..."
+			EMPTY_RESPONSE_COUNT=1
+		else
+			echo -e "Jupyterlab curl API returned an empty array for the second time. Shutting down...\n"
+			/usr/sbin/shutdown now
+			SHUTDOWN_STATUS=$?
+			if [ ${SHUTDOWN_STATUS} -ne 0 ]; then
+				/mnt/c/WINDOWS/system32/wsl.exe -t Ubuntu-20.04
+			fi
 		fi
 	#else 
-		#echo "Received Response ============> Not shutting down"
+		# echo "Received Response ============> Not shutting down"
 	fi 
-	echo "------------------------------------------------------------------------------"
+	# echo "------------------------------------------------------------------------------"
 	sleep ${CHECK_INTERVAL}
 done
