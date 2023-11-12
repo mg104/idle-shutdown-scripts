@@ -48,6 +48,7 @@ shift $((OPTIND-1))
 
 # Making log file if not there already
 if [ ! -f "${LOG_FILE}" ]; then
+	mkdir -p "$(dirname "${LOG_FILE}")" && touch "${LOG_FILE}"
 	echo "New file created on $(date)" > "${LOG_FILE}"
 fi
 
