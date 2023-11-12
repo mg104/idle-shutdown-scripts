@@ -78,15 +78,25 @@ for CONTAINER in $CONTAINER_NAMES; do
 	check_container_status "${CONTAINER}"
 done
 
-# Run a while true loop that runs both the scripts at regular intervals, and shuts down the host computer if all the scripts return an exit status of 1 (error) or SHUTDOWN_SIGNAL=1
+# Creating an array capturing the PID of the script running. This list will be used to check the exit status of the asynchronously running scripts and decrement CONTAINER_COUNT accordingly
+declare -a PID_ARRAY=()
+
+# Run a while true loop that runs both the scripts (asynchronously) at regular intervals, and shuts down the host computer if all the scripts return an exit status of 1 (error) or SHUTDOWN_SIGNAL=1
 for i in "${!SCRIPT_ARRAY[@]}"; do
-	echo "Running script ${SCRIPT_ARRAY[i]}"
-	"${SCRIPT_ARRAY[i]}" ${OPTIONS_ARRAY[i]}
-	if [ "$?" -eq 0 ]; then
+	echo "Running script ${SCRIPT_ARRAY[i]} ${OPTIONS_ARRAY[i]}"
+	"${SCRIPT_ARRAY[i]}" ${OPTIONS_ARRAY[i]} &
+	PID_ARRAY+=("$!")
+	echo "PID: $!"
+done
+
+# Checking the exit statuses of asynchronously running and exited scripts and decrementing the CONTAINER_COUNT if both give shutdown signal by exiting with status 0
+for PID in "${PID_ARRAY[@]}"; do
+	wait "${PID}"
+	EXIT_STATUS="$?"
+	if [ "${EXIT_STATUS}" -eq 0 ]; then
 		CONTAINER_COUNT=$((${CONTAINER_COUNT}-1))
-		echo "Container scripts remaining to be run: ${CONTAINER_COUNT}"
+		echo "Script with PID ${PID} has given go ahead to shutdown its container. Proceeding to next step..."
 	fi
-	echo "Script $0 has given go ahead to shutdown its container. Proceeding to next step..."
 done
 
 echo "Ran both the scripts"
