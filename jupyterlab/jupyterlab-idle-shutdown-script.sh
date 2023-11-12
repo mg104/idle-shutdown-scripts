@@ -51,45 +51,29 @@ if [ ! -f "${LOG_FILE}" ]; then
 	echo "New file created on $(date)" > "${LOG_FILE}"
 fi
 
-# Emptying log file
-echo '=============================Cleared log file from previous runs===============================' > "${LOG_FILE}"
-
 exec >> "${LOG_FILE}" 2>&1
 
-# Holding on till docker container starts up
-echo "Checking if docker is running"
-while true; do
-	if docker info >/dev/null 2>&1; then
-		echo "Docker is running"
-		break
-	else	
-		echo "Waiting for docker to start"
-		sleep 1
-	fi
-done
+# Recording new run
+echo -e "============================= New idle shutdown script run on date: $(date) ===============================\n"
 
-while ! docker container inspect -f '{{.State.Running}}' "${CONTAINER_NAME}" >/dev/null 2>&1; do
-		echo "Docker container is yet to start"
-		sleep 1
-done
-
-#Printing env variables before going to sleep for 5 minutes
+#Printing env variables before going to sleep for few minutes
 
 # Get the docker container's name from BASHRC file. Declare it in .bashrc file for purposes of being used at startup
-echo "Container Name: ${CONTAINER_NAME}"
+echo -e "Container Name: ${CONTAINER_NAME}\n"
 
 # Get the Jupyter Token from the running container
 JUPYTER_TOKEN=$(/usr/bin/docker exec ${CONTAINER_NAME} printenv JUPYTER_TOKEN)
-echo "Jupyter token: ${JUPYTER_TOKEN}"
+echo -e "Jupyter token: ${JUPYTER_TOKEN}\n"
 
 # Create the jupyterlab api-session URL string
 API_SESSION="localhost:8888/api/sessions?token=${JUPYTER_TOKEN}"
 echo -e "API Session: ${API_SESSION}\n"
-echo "---------------------------------------------------------------------------"
+echo -e "---------------------------------------------------------------------------\n"
 
 # Sleeping for some time to allow time to start notebooks
-echo "Sleeping for ${SLEEP_SECONDS} seconds"
+echo -e "Sleeping for ${SLEEP_SECONDS} seconds to allow some time to start up the jupyterlab notebooks\n"
 sleep ${SLEEP_SECONDS}
+echo -e "Starting monitoring the jupyterlab activity on $(date)"
 
 # Setting initial empty response count, to shut down only when we receive empty response the second time
 EMPTY_RESPONSE_COUNT=0
@@ -97,27 +81,22 @@ EMPTY_RESPONSE_COUNT=0
 # Create a while loop to check every n seconds if there is no kernel running
 while true; do
 	RESPONSE=$(/usr/bin/docker exec ${CONTAINER_NAME} curl -s "${API_SESSION}")
-	# echo -e "Response:\n${RESPONSE}\n"
 	if [ "${RESPONSE}" != "[]" ]; then
 		if [ "${EMPTY_RESPONSE_COUNT}" == 1 ]; then
-			echo "Jupyterlab notebook restarted and therefore resetting the shutdown empty response counter"
+			echo "Jupyterlab notebook restarted on $(date) and therefore resetting the shutdown empty response counter"
 		fi
 		EMPTY_RESPONSE_COUNT=0
 	elif [ "${RESPONSE}" == "[]" ]; then
 		if [ ${EMPTY_RESPONSE_COUNT} -eq 0 ]; then
-			echo "Jupyterlab curl API has returned an empty array for the first time. Waiting for it to return empty array the second time..."
+			echo -e "Jupyterlab curl API has returned an empty array for the first time on $(date). Waiting for it to return empty array the second time...\n"
 			EMPTY_RESPONSE_COUNT=1
 		else
-			echo -e "Jupyterlab curl API returned an empty array for the second time. Shutting down...\n"
-			/usr/sbin/shutdown now
-			SHUTDOWN_STATUS=$?
-			if [ ${SHUTDOWN_STATUS} -ne 0 ]; then
-				/mnt/c/WINDOWS/system32/wsl.exe -t Ubuntu-20.04
-			fi
+			echo -e "Jupyterlab curl API returned an empty array for the second time on $(date). Giving signal to shut down by exiting with status 0...\n"
+			echo -e "===================================Idle shutdown script recommended shutdown on date: $(date)==========================================\n\n\n\n"
+			exit 0
 		fi
-	#else 
-		# echo "Received Response ============> Not shutting down"
 	fi 
-	# echo "------------------------------------------------------------------------------"
 	sleep ${CHECK_INTERVAL}
 done 
+
+echo "========================================Idle shutdown script didn't run fully on date: $(date)========================================\n\n\n\n"
