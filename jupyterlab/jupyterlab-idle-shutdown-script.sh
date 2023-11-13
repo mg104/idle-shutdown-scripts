@@ -82,7 +82,6 @@ EMPTY_RESPONSE_COUNT=0
 # Create a while loop to check every n seconds if there is no kernel running
 while true; do
 	RESPONSE=$(/usr/bin/docker exec ${CONTAINER_NAME} curl -s "${API_SESSION}")
-	echo "${RESPONSE}"
 	if [ "${RESPONSE}" != "[]" ]; then
 		if [ "${EMPTY_RESPONSE_COUNT}" == 1 ]; then
 			echo "Jupyterlab notebook restarted on $(date) and therefore resetting the shutdown empty response counter"
