@@ -7,7 +7,7 @@ The various variations of idle shutdown scripts created by me so far are as foll
 
 1. idle-shutdown-scripts/jupyterlab/jupyterlab-idle-shutdown-script.sh: Shutting down a host computer if a jupyterlab docker container running on it, doesn't have any notebooks running (i.e., jupyterlab has been idle for some time).
 
-   NOTE: The above shutdown script for jupyterlab will work only if you have set up the following variables in the file /home/${USER}/.jupyter/jupyter_notebook_config.py in your jupyterlab docker container:
+   NOTE: The above shutdown script for jupyterlab will work only if you have set up the following variables in the file /home/madhur/.jupyter/jupyter_notebook_config.py in your jupyterlab docker container:
    * c.MappingKernelManager.cull_busy = False (This will ensure that your jupyterlab doesn't shut down if its busy running some code)
    * c.MappingKernelManager.cull_connected = True (This will ensure that your jupyterlab will shut down even if its browser window is open on your computer, but its otherwise lying idle)
    * c.MappingKernelManager.cull_idle_timeout = 1800 (This will ensure that your jupyterlab will shut down after 1800 seconds, or 30 minutes, of your jupyterlab server lying idle)
