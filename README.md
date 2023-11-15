@@ -5,7 +5,7 @@
 
 The various variations of idle shutdown scripts created by me so far are as follows:
 
-1. idle-shutdown-scripts/jupyterlab/jupyterlab-idle-shutdown-script.sh: Shutting down a host computer if a jupyterlab docker container running on it, doesn't have any notebooks running (i.e., jupyterlab has been idle for some time).
+1. **idle-shutdown-scripts/jupyterlab/jupyterlab-idle-shutdown-script.sh**: Shutting down a host computer if a jupyterlab docker container running on it, doesn't have any notebooks running (i.e., jupyterlab has been idle for some time).
 
    NOTE: The above shutdown script for jupyterlab will work only if you have set up the following variables in the file /home/madhur/.jupyter/jupyter_notebook_config.py in your jupyterlab docker container:
    * c.MappingKernelManager.cull_busy = False (This will ensure that your jupyterlab doesn't shut down if its busy running some code)
@@ -16,9 +16,9 @@ The various variations of idle shutdown scripts created by me so far are as foll
 
 For example of how to make such a docker container, refer to an example dockerfile and its associated files in my github repo: https://github.com/mg104/sos-notebook-repo.git
     
-2. idle-shutdown-scripts/vscode/vscode-idle-shutdown-script.sh: Shutting down a host computer if a vscode container running on it, is idle.
+2. **idle-shutdown-scripts/vscode/vscode-idle-shutdown-script.sh**: Shutting down a host computer if a vscode container running on it, is idle.
 
-3. idle-shutdown-scripts/idle-shutdown-collaborator.sh: In case there are multiple containers running on your host computer, I've created a script to co-ordinate between the shutdown scripts running for the multiple containers. In case all the containers are idle, this coordinator script will shut down the host.
+3. **idle-shutdown-scripts/idle-shutdown-collaborator.sh**: In case there are multiple containers running on your host computer, I've created a script to co-ordinate between the shutdown scripts running for the multiple containers. In case all the containers are idle, this coordinator script will shut down the host.
 
 If you have 2 jupyterlab containers running in your host computer, do the following to schedule idle shutdown scripts:
 * Clone this repo to your `/home/madhur`, by running `cd /home/madhur && git clone git@github.com:mg104/idle-shutdown-scripts.git`
